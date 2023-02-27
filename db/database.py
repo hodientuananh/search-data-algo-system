@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-MYSQL_URL = "mysql+pymysql://root:root1234@localhost:3306/my_test_db?charset=utf8"
+SQLLITE_URL = "mysql+pymysql://root:root1234@localhost:3306/SEARCH_DATA_AND_ALGO"
 POOL_SIZE = 20
 POOL_RECYCLE = 3600
 POOL_TIMEOUT = 15
@@ -17,7 +17,7 @@ class Database():
         if self.connection_is_active == False:
             connect_args = {"connect_timeout":CONNECT_TIMEOUT}
             try:
-                self.engine = create_engine(MYSQL_URL, pool_size=POOL_SIZE, pool_recycle=POOL_RECYCLE,
+                self.engine = create_engine(SQLLITE_URL, pool_size=POOL_SIZE, pool_recycle=POOL_RECYCLE,
                         pool_timeout=POOL_TIMEOUT, max_overflow=MAX_OVERFLOW, connect_args=connect_args)
                 return self.engine
             except Exception as ex:

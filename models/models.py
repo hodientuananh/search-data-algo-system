@@ -19,15 +19,13 @@ class Product(Base):
                         server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
 
-class User(Base):
-    __tablename__ = "user"
+class Tag(Base):
+    __tablename__ = "tag"
     id = Column(INTEGER, primary_key=True)
-    first_name = Column(String(512), nullable=False)
-    last_name = Column(String(512), nullable=False)
-    deleted = (Column(BOOLEAN, default=False))
-    created_by = Column(INTEGER, nullable=True)
-    created_at = Column(TIMESTAMP, nullable=False,
-                        server_default=text("CURRENT_TIMESTAMP"))
-    updated_by = Column(INTEGER, nullable=True)
-    updated_at = Column(TIMESTAMP, nullable=True,
-                        server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
+    name = (Column(String(255), nullable=True))
+
+class Category(Base):
+    __tablename__ = "category"
+    id = Column(INTEGER, primary_key=True)
+    name = (Column(String(255), nullable=True))
+    image_url = (Column(String(255), nullable=True))
