@@ -4,6 +4,7 @@ from sqlalchemy import Column, INTEGER, String, TIMESTAMP, BIGINT, BOOLEAN, TEXT
 
 Base = declarative_base()
 
+
 class Product(Base):
     __tablename__ = "product"
     id = Column(INTEGER, primary_key=True)
@@ -25,11 +26,13 @@ class Tag(Base):
     id = Column(INTEGER, primary_key=True)
     name = (Column(String(255), nullable=True))
 
+
 class Category(Base):
     __tablename__ = "category"
     id = Column(INTEGER, primary_key=True)
     name = (Column(String(255), nullable=True))
     image_url = (Column(String(255), nullable=True))
+
 
 class Knowledge(Base):
     __tablename__ = "knowledge"
@@ -37,12 +40,15 @@ class Knowledge(Base):
     category_id = Column(INTEGER, nullable=True)
     name = Column(String(255), nullable=True)
     description = Column(String(255))
+
+
 class Definition(Base):
     __tablename__ = "definition"
     id = Column(INTEGER, primary_key=True)
     knowledge_id = Column(INTEGER, nullable=True)
     content = Column(TEXT())
     description = Column(String(255))
+
 
 class Feature(Base):
     __tablename__ = "feature"
@@ -51,6 +57,7 @@ class Feature(Base):
     content = Column(TEXT())
     description = Column(String(255))
 
+
 class Exercise(Base):
     __tablename__ = "exercise"
     id = Column(INTEGER, primary_key=True)
@@ -58,12 +65,14 @@ class Exercise(Base):
     content = Column(TEXT())
     description = Column(String(255))
 
+
 class Methodology(Base):
     __tablename__ = "methodology"
     id = Column(INTEGER, primary_key=True)
     knowledge_id = Column(INTEGER, nullable=True)
     content = Column(TEXT())
     description = Column(String(255))
+
 
 class Knowledge_Tag(Base):
     __tablename__ = "knowledge_tag"
