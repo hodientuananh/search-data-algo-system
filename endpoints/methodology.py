@@ -24,11 +24,11 @@ async def read_all_categories(page_size: int, page: int):
         desc(Methodology.name)).limit(page_size).offset((page - 1) * page_size).all()
     total_count = session.query(Methodology).count()
     total_pages = ceil(total_count / page_size)
-    pagination = {
-        "total_pages": total_pages,
-        "current_page": page
-    }
-    return Response(data, pagination, 200, "Methodology retrieved successfully.", False)
+    # pagination = {
+    #     "total_pages": total_pages,
+    #     "current_page": page
+    # }
+    return Response(data, {}, 200, "Methodology retrieved successfully.", False)
 
 
 @router.get("/{methodology_id}")

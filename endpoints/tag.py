@@ -41,8 +41,8 @@ async def read_tag(tag_id: str):
         print("Error", ex)
         response_message = "Tag Not found"
     error = False
-    pagination = {
-        "total_pages": 1,
-        "current_page": 1
-    }
-    return Response(data, pagination, 200, response_message, error)
+    # pagination = {
+    #     "total_pages": 1,
+    #     "current_page": 1
+    # }
+    return Response(data, {}, 200, response_message, error)
