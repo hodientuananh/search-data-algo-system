@@ -2,7 +2,7 @@ from math import ceil
 
 from fastapi import APIRouter
 from models.response import Response
-from models.models import Knowledge
+from models.models import Knowledge, Definition, Feature, Methodology, Exercise
 from db.database import Database
 from sqlalchemy import desc
 
@@ -47,4 +47,38 @@ async def read_knowledge(knowledge_id: str):
     #     "total_pages": 1,
     #     "current_page": 1
     # }
+    return Response(data, {}, 200, response_message, error)
+
+@router.get("/{knowledge_id}/content")
+async def get_content(knowledge_id: str):
+    session = database.get_db_session(engine)
+    response_message = "Knowledge retrieved successfully"
+    data = {
+        'id': None,
+        'name': None,
+        'description': None,
+        'definition': None,
+        'feature': None,
+        'methodology': None,
+        'exercise': None
+    }
+    try:
+        knowledge = session.query(Knowledge).filter(
+            Knowledge.id == knowledge_id).one()
+        definition = session.query(Definition).filter(
+            Definition.knowledge_id == knowledge_id).one()
+        feature = session.query(Feature).filter(Feature.knowledge_id == knowledge_id).one()
+        methodology = session.query(Methodology).filter(Methodology.knowledge_id == knowledge_id).all()
+        exercise = session.query(Exercise).filter(Exercise.knowledge_id == knowledge_id).all()
+        data['id'] = knowledge.id
+        data['name'] = knowledge.name
+        data['description'] = knowledge.description
+        data['definition'] = definition
+        data['feature'] = feature
+        data['methodology'] = methodology
+        data['exercise'] = exercise
+    except Exception as ex:
+        print("Error", ex)
+        response_message = "Knowledge Not found"
+    error = False
     return Response(data, {}, 200, response_message, error)
