@@ -2,7 +2,7 @@ from math import ceil
 
 from fastapi import APIRouter, Query
 from models.response import Response
-from models.models import Knowledge, Definition, Exercise, Methodology, Knowledge_Tag, Tag
+from models.models import Knowledge, Definition, Exercise, Methodology, Knowledge_Tag, Feature
 from db.database import Database
 from typing import Optional, List, Union
 
@@ -26,7 +26,8 @@ async def search_result(keyword: Optional[str] = None, tables: Union[List[str], 
         'knowledge': {},
         'definition': {},
         'exercise': {},
-        'methodology': {}
+        'methodology': {},
+        'feature': {}
     }
     if keyword is not None:
         if tables is not None:
@@ -76,6 +77,19 @@ async def search_result(keyword: Optional[str] = None, tables: Union[List[str], 
                 }
                 data['methodology'] = {
                     'data': methodology,
+                    'pagination': pagination
+                }
+            if "feature" in tables:
+                feature = session.query(Feature).filter(Feature.content.ilike(f"%{keyword}%")).all()
+                feature_total_count = session.query(Feature).filter(
+                    Feature.content.ilike(f"%{keyword}%")).count()
+                feature_total_pages = ceil(feature_total_count / page_size)
+                pagination = {
+                    "total_pages": feature_total_pages,
+                    "current_page": page
+                }
+                data['feature'] = {
+                    'data': feature,
                     'pagination': pagination
                 }
     elif tag_id is not None:
