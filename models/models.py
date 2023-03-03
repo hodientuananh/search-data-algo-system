@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, INTEGER, String, TIMESTAMP, BIGINT, BOOLEAN, TEXT, text, ForeignKey
+from sqlalchemy import Column, INTEGER, String, TIMESTAMP, BIGINT, BOOLEAN, TEXT, Boolean, text, ForeignKey
 
 Base = declarative_base()
 
@@ -25,6 +25,7 @@ class Tag(Base):
     __tablename__ = "tag"
     id = Column(INTEGER, primary_key=True)
     name = (Column(String(255), nullable=True))
+    is_show = Column(Boolean, default=False)
 
 
 class Category(Base):
