@@ -1,3 +1,5 @@
+from math import ceil
+
 from fastapi import APIRouter
 from models.response import Response
 from models.models import Knowledge
@@ -20,7 +22,13 @@ async def read_all_knowledges(page_size: int, page: int):
     session = database.get_db_session(engine)
     data = session.query(Knowledge).order_by(
         desc(Knowledge.name)).limit(page_size).offset((page - 1) * page_size).all()
-    return Response(data, 200, "Knowledge retrieved successfully.", False)
+    total_count = session.query(Knowledge).count()
+    total_pages = ceil(total_count / page_size)
+    pagination = {
+        "total_pages": total_pages,
+        "current_page": page
+    }
+    return Response(data, pagination, 200, "Knowledge retrieved successfully.", False)
 
 
 @router.get("/{knowledge_id}")
@@ -35,4 +43,8 @@ async def read_knowledge(knowledge_id: str):
         print("Error", ex)
         response_message = "Knowledge Not found"
     error = False
-    return Response(data, 200, response_message, error)
+    pagination = {
+        "total_pages": 1,
+        "current_page": 1
+    }
+    return Response(data, pagination, 200, response_message, error)
