@@ -2,7 +2,7 @@ from math import ceil
 
 from fastapi import APIRouter
 from models.response import Response
-from models.models import Exercise
+from models.models import Exercise, Knowledge
 from db.database import Database
 from sqlalchemy import desc
 
@@ -32,7 +32,7 @@ async def read_all_categories(page_size: int, page: int):
 
 
 @router.get("/{exercise_id}")
-async def read_exercise(exercise_id: str):
+async def read_exercise(exercise_id: int):
     session = database.get_db_session(engine)
     response_message = "Exercise retrieved successfully"
     data = None
@@ -47,4 +47,37 @@ async def read_exercise(exercise_id: str):
     #     "total_pages": 1,
     #     "current_page": 1
     # }
+    return Response(data, {}, 200, response_message, error)
+
+
+@router.get("/{exercise_id}/content")
+async def get_content_of_exercise(exercise_id: int):
+    session = database.get_db_session(engine)
+    response_message = "Content retrieved successfully"
+    data = {
+        'knowledge_id': None,
+        'id': None,
+        'name': None,
+        'description': None,
+        'content': None,
+        'knowledge': None,
+        'related': None
+    }
+    try:
+        exercise = session.query(Exercise).filter(
+            Exercise.id == exercise_id).one()
+        knowledge = session.query(Knowledge).filter(Knowledge.id == exercise.knowledge_id).one()
+        related_exercise = session.query(Exercise).filter(Exercise.knowledge_id == knowledge.id).all()
+
+        data['knowledge_id'] = exercise.knowledge_id
+        data['id'] = exercise.id
+        data['name'] = exercise.name
+        data['description'] = exercise.description
+        data['content'] = exercise.content
+        data['knowledge'] = knowledge
+        data['related'] = related_exercise
+    except Exception as ex:
+        print("Error", ex)
+        response_message = "Content Not found"
+    error = False
     return Response(data, {}, 200, response_message, error)

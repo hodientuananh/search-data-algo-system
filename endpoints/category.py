@@ -32,7 +32,7 @@ async def read_all_categories(page_size: int, page: int):
 
 
 @router.get("/{category_id}")
-async def read_category(category_id: str):
+async def read_category(category_id: int):
     session = database.get_db_session(engine)
     response_message = "Category retrieved successfully"
     data = None

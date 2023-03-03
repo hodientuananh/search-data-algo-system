@@ -18,7 +18,7 @@ engine = database.get_db_connection()
 
 
 @router.get("/")
-async def read_all_knowledges(page_size: int, page: int):
+async def read_all_knowledge(page_size: int, page: int):
     session = database.get_db_session(engine)
     data = session.query(Knowledge).order_by(
         desc(Knowledge.name)).limit(page_size).offset((page - 1) * page_size).all()
@@ -32,7 +32,7 @@ async def read_all_knowledges(page_size: int, page: int):
 
 
 @router.get("/{knowledge_id}")
-async def read_knowledge(knowledge_id: str):
+async def read_knowledge(knowledge_id: int):
     session = database.get_db_session(engine)
     response_message = "Knowledge retrieved successfully"
     data = None
@@ -50,9 +50,9 @@ async def read_knowledge(knowledge_id: str):
     return Response(data, {}, 200, response_message, error)
 
 @router.get("/{knowledge_id}/content")
-async def get_content(knowledge_id: str):
+async def get_content_of_knowledge(knowledge_id: int):
     session = database.get_db_session(engine)
-    response_message = "Knowledge retrieved successfully"
+    response_message = "Content retrieved successfully"
     data = {
         'id': None,
         'name': None,
@@ -60,7 +60,8 @@ async def get_content(knowledge_id: str):
         'definition': None,
         'feature': None,
         'methodology': None,
-        'exercise': None
+        'exercise': None,
+        'related': None
     }
     try:
         knowledge = session.query(Knowledge).filter(
@@ -70,6 +71,7 @@ async def get_content(knowledge_id: str):
         feature = session.query(Feature).filter(Feature.knowledge_id == knowledge_id).one()
         methodology = session.query(Methodology).filter(Methodology.knowledge_id == knowledge_id).all()
         exercise = session.query(Exercise).filter(Exercise.knowledge_id == knowledge_id).all()
+        related_knowledge = session.query(Knowledge).filter(Knowledge.category_id == knowledge.category_id).all()
         data['id'] = knowledge.id
         data['name'] = knowledge.name
         data['description'] = knowledge.description
@@ -77,8 +79,9 @@ async def get_content(knowledge_id: str):
         data['feature'] = feature
         data['methodology'] = methodology
         data['exercise'] = exercise
+        data['related'] = related_knowledge
     except Exception as ex:
         print("Error", ex)
-        response_message = "Knowledge Not found"
+        response_message = "Content Not found"
     error = False
     return Response(data, {}, 200, response_message, error)

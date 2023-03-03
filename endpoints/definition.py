@@ -2,7 +2,7 @@ from math import ceil
 
 from fastapi import APIRouter
 from models.response import Response
-from models.models import Definition
+from models.models import Definition, Knowledge
 from db.database import Database
 from sqlalchemy import desc
 
@@ -32,7 +32,7 @@ async def read_all_definitions(page_size: int, page: int):
 
 
 @router.get("/{definition_id}")
-async def read_definition(definition_id: str):
+async def read_definition(definition_id: int):
     session = database.get_db_session(engine)
     response_message = "Definition retrieved successfully"
     data = None
@@ -43,8 +43,39 @@ async def read_definition(definition_id: str):
         print("Error", ex)
         response_message = "Definition Not found"
     error = False
-    # pagination = {
-    #     "total_pages": 1,
-    #     "current_page": 1
-    # }
+    return Response(data, {}, 200, response_message, error)
+
+
+@router.get("/{definition_id}/content")
+async def get_content_of_definition(definition_id: int):
+    session = database.get_db_session(engine)
+    response_message = "Content retrieved successfully"
+    data = {
+        'knowledge_id': None,
+        'id': None,
+        'name': None,
+        'description': None,
+        'content': None,
+        'knowledge': None,
+        'related': None
+    }
+    try:
+        definition = session.query(Definition).filter(
+            Definition.id == definition_id).one()
+        knowledge = session.query(Knowledge).filter(Knowledge.id == definition.knowledge_id).one()
+        related_knowledge = session.query(Knowledge).filter(Knowledge.category_id == knowledge.category_id).all()
+        related_definition = session.query(Definition).filter(Definition.knowledge_id.in_(
+            [e.id for e in related_knowledge])
+        ).all()
+        data['knowledge_id'] = definition.knowledge_id
+        data['id'] = definition.id
+        data['name'] = definition.name
+        data['description'] = definition.description
+        data['content'] = definition.content
+        data['knowledge'] = knowledge
+        data['related'] = related_definition
+    except Exception as ex:
+        print("Error", ex)
+        response_message = "Content Not found"
+    error = False
     return Response(data, {}, 200, response_message, error)

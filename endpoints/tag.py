@@ -30,7 +30,7 @@ async def read_all_tags(page_size: int, page: int):
     return Response(data, pagination, 200, "Tag retrieved successfully.", False)
 
 @router.get("/{tag_id}")
-async def read_tag(tag_id: str):
+async def read_tag(tag_id: int):
     session = database.get_db_session(engine)
     response_message = "Tag retrieved successfully"
     data = None

@@ -2,7 +2,7 @@ from math import ceil
 
 from fastapi import APIRouter
 from models.response import Response
-from models.models import Feature
+from models.models import Feature, Knowledge
 from db.database import Database
 from sqlalchemy import desc
 
@@ -32,7 +32,7 @@ async def read_all_categories(page_size: int, page: int):
 
 
 @router.get("/{feature_id}")
-async def read_feature(feature_id: str):
+async def read_feature(feature_id: int):
     session = database.get_db_session(engine)
     response_message = "Feature retrieved successfully"
     data = None
@@ -47,4 +47,37 @@ async def read_feature(feature_id: str):
     #     "total_pages": 1,
     #     "current_page": 1
     # }
+    return Response(data, {}, 200, response_message, error)
+
+
+@router.get("/{feature_id}/content")
+async def get_content_of_feature(feature_id: int):
+    session = database.get_db_session(engine)
+    response_message = "Content retrieved successfully"
+    data = {
+        'knowledge_id': None,
+        'id': None,
+        'name': None,
+        'description': None,
+        'content': None,
+        'knowledge': None,
+        'related': None
+    }
+    try:
+        feature = session.query(Feature).filter(
+            Feature.id == feature_id).one()
+        knowledge = session.query(Knowledge).filter(Knowledge.id == feature.knowledge_id).one()
+        related_knowledge = session.query(Knowledge).filter(Knowledge.category_id == knowledge.category_id).all()
+        related_feature = session.query(Feature).filter(Feature.knowledge_id.in_([e.id for e in related_knowledge])).all()
+        data['knowledge_id'] = feature.knowledge_id
+        data['id'] = feature.id
+        data['name'] = feature.name
+        data['description'] = feature.description
+        data['content'] = feature.content
+        data['knowledge'] = knowledge
+        data['related'] = related_feature
+    except Exception as ex:
+        print("Error", ex)
+        response_message = "Content Not found"
+    error = False
     return Response(data, {}, 200, response_message, error)

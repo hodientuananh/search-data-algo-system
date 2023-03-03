@@ -2,7 +2,7 @@ from math import ceil
 
 from fastapi import APIRouter
 from models.response import Response
-from models.models import Methodology
+from models.models import Methodology, Knowledge
 from db.database import Database
 from sqlalchemy import desc
 
@@ -32,7 +32,7 @@ async def read_all_categories(page_size: int, page: int):
 
 
 @router.get("/{methodology_id}")
-async def read_methodology(methodology_id: str):
+async def read_methodology(methodology_id: int):
     session = database.get_db_session(engine)
     response_message = "Methodology retrieved successfully"
     data = None
@@ -48,3 +48,36 @@ async def read_methodology(methodology_id: str):
         "current_page": 1
     }
     return Response(data, pagination, 200, response_message, error)
+
+
+@router.get("/{methodology_id}/content")
+async def get_content_of_methodology(methodology_id: int):
+    session = database.get_db_session(engine)
+    response_message = "Content retrieved successfully"
+    data = {
+        'knowledge_id': None,
+        'id': None,
+        'name': None,
+        'description': None,
+        'content': None,
+        'knowledge': None,
+        'related': None
+    }
+    try:
+        methodology = session.query(Methodology).filter(
+            Methodology.id == methodology_id).one()
+        knowledge = session.query(Knowledge).filter(Knowledge.id == methodology.knowledge_id).one()
+        related_methodology = session.query(Methodology).filter(Methodology.knowledge_id == knowledge.id).all()
+
+        data['knowledge_id'] = methodology.knowledge_id
+        data['id'] = methodology.id
+        data['name'] = methodology.name
+        data['description'] = methodology.description
+        data['content'] = methodology.content
+        data['knowledge'] = knowledge
+        data['related'] = related_methodology
+    except Exception as ex:
+        print("Error", ex)
+        response_message = "Content Not found"
+    error = False
+    return Response(data, {}, 200, response_message, error)
