@@ -67,7 +67,8 @@ async def get_content_of_exercise(exercise_id: int):
         exercise = session.query(Exercise).filter(
             Exercise.id == exercise_id).first()
         knowledge = session.query(Knowledge).filter(Knowledge.id == exercise.knowledge_id).first()
-        related_exercise = session.query(Exercise).filter(Exercise.knowledge_id == knowledge.id).all()
+        related_exercise = session.query(Exercise).filter(Exercise.knowledge_id == knowledge.id)\
+            .filter(Exercise.id != exercise_id).all()
 
         data['knowledge_id'] = exercise.knowledge_id
         data['id'] = exercise.id

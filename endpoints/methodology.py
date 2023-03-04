@@ -63,7 +63,8 @@ async def get_content_of_methodology(methodology_id: int):
         methodology = session.query(Methodology).filter(
             Methodology.id == methodology_id).first()
         knowledge = session.query(Knowledge).filter(Knowledge.id == methodology.knowledge_id).first()
-        related_methodology = session.query(Methodology).filter(Methodology.knowledge_id == knowledge.id).all()
+        related_methodology = session.query(Methodology).filter(Methodology.knowledge_id == knowledge.id) \
+            .filter(Methodology.id != methodology_id).all()
 
         data['knowledge_id'] = methodology.knowledge_id
         data['id'] = methodology.id

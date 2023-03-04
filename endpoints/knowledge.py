@@ -2,7 +2,7 @@ from math import ceil
 
 from fastapi import APIRouter
 from models.response import Response
-from models.models import Knowledge, Definition, Feature, Methodology, Exercise
+from models.models import Knowledge, Definition, Feature, Methodology, Exercise, Category, Tag, Knowledge_Tag
 from db.database import Database
 from sqlalchemy import desc
 
@@ -66,17 +66,21 @@ async def get_content_of_knowledge(knowledge_id: int):
     try:
         knowledge = session.query(Knowledge).filter(
             Knowledge.id == knowledge_id).first()
-        print(knowledge)
-
+        category = session.query(Category).filter(Category.id == knowledge.category_id).first()
         definition = session.query(Definition).filter(
             Definition.knowledge_id == knowledge_id).first()
         feature = session.query(Feature).filter(Feature.knowledge_id == knowledge_id).first()
         methodology = session.query(Methodology).filter(Methodology.knowledge_id == knowledge_id).all()
         exercise = session.query(Exercise).filter(Exercise.knowledge_id == knowledge_id).all()
-        related_knowledge = session.query(Knowledge).filter(Knowledge.category_id == knowledge.category_id).all()
+        knowledge_tag = session.query(Knowledge_Tag).filter(Knowledge_Tag.knowledge_id == knowledge_id).all()
+        tag = session.query(Tag).filter(Tag.id.in_([e.tag_id for e in knowledge_tag])).all()
+        related_knowledge = session.query(Knowledge).filter(Knowledge.category_id == knowledge.category_id) \
+            .filter(Knowledge.id != knowledge_id).all()
         data['id'] = knowledge.id
         data['name'] = knowledge.name
         data['description'] = knowledge.description
+        data['category'] = category
+        data['tag'] = tag
         data['definition'] = definition
         data['feature'] = feature
         data['methodology'] = methodology

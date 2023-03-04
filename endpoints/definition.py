@@ -66,7 +66,7 @@ async def get_content_of_definition(definition_id: int):
         related_knowledge = session.query(Knowledge).filter(Knowledge.category_id == knowledge.category_id).all()
         related_definition = session.query(Definition).filter(Definition.knowledge_id.in_(
             [e.id for e in related_knowledge])
-        ).all()
+        ).filter(Definition.id != definition_id).all()
         data['knowledge_id'] = definition.knowledge_id
         data['id'] = definition.id
         data['name'] = definition.name

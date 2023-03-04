@@ -68,7 +68,8 @@ async def get_content_of_feature(feature_id: int):
             Feature.id == feature_id).first()
         knowledge = session.query(Knowledge).filter(Knowledge.id == feature.knowledge_id).first()
         related_knowledge = session.query(Knowledge).filter(Knowledge.category_id == knowledge.category_id).all()
-        related_feature = session.query(Feature).filter(Feature.knowledge_id.in_([e.id for e in related_knowledge])).all()
+        related_feature = session.query(Feature).filter(Feature.knowledge_id.in_([e.id for e in related_knowledge]))\
+            .filter(Feature.id != feature_id).all()
         data['knowledge_id'] = feature.knowledge_id
         data['id'] = feature.id
         data['name'] = feature.name
