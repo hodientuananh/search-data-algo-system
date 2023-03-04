@@ -38,7 +38,7 @@ async def read_definition(definition_id: int):
     data = None
     try:
         data = session.query(Definition).filter(
-            Definition.id == definition_id).one()
+            Definition.id == definition_id).first()
     except Exception as ex:
         print("Error", ex)
         response_message = "Definition Not found"
@@ -61,8 +61,8 @@ async def get_content_of_definition(definition_id: int):
     }
     try:
         definition = session.query(Definition).filter(
-            Definition.id == definition_id).one()
-        knowledge = session.query(Knowledge).filter(Knowledge.id == definition.knowledge_id).one()
+            Definition.id == definition_id).first()
+        knowledge = session.query(Knowledge).filter(Knowledge.id == definition.knowledge_id).first()
         related_knowledge = session.query(Knowledge).filter(Knowledge.category_id == knowledge.category_id).all()
         related_definition = session.query(Definition).filter(Definition.knowledge_id.in_(
             [e.id for e in related_knowledge])

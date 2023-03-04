@@ -38,7 +38,7 @@ async def read_category(category_id: int):
     data = None
     try:
         data = session.query(Category).filter(
-            Category.id == category_id).one()
+            Category.id == category_id).first()
     except Exception as ex:
         print("Error", ex)
         response_message = "Category Not found"

@@ -36,7 +36,7 @@ async def read_tag(tag_id: int):
     data = None
     try:
         data = session.query(Tag).filter(
-            Tag.id == tag_id).one()
+            Tag.id == tag_id).first()
     except Exception as ex:
         print("Error", ex)
         response_message = "Tag Not found"

@@ -38,7 +38,7 @@ async def read_knowledge(knowledge_id: int):
     data = None
     try:
         data = session.query(Knowledge).filter(
-            Knowledge.id == knowledge_id).one()
+            Knowledge.id == knowledge_id).first()
     except Exception as ex:
         print("Error", ex)
         response_message = "Knowledge Not found"
@@ -65,10 +65,12 @@ async def get_content_of_knowledge(knowledge_id: int):
     }
     try:
         knowledge = session.query(Knowledge).filter(
-            Knowledge.id == knowledge_id).one()
+            Knowledge.id == knowledge_id).first()
+        print(knowledge)
+
         definition = session.query(Definition).filter(
-            Definition.knowledge_id == knowledge_id).one()
-        feature = session.query(Feature).filter(Feature.knowledge_id == knowledge_id).one()
+            Definition.knowledge_id == knowledge_id).first()
+        feature = session.query(Feature).filter(Feature.knowledge_id == knowledge_id).first()
         methodology = session.query(Methodology).filter(Methodology.knowledge_id == knowledge_id).all()
         exercise = session.query(Exercise).filter(Exercise.knowledge_id == knowledge_id).all()
         related_knowledge = session.query(Knowledge).filter(Knowledge.category_id == knowledge.category_id).all()

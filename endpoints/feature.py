@@ -38,7 +38,7 @@ async def read_feature(feature_id: int):
     data = None
     try:
         data = session.query(Feature).filter(
-            Feature.id == feature_id).one()
+            Feature.id == feature_id).first()
     except Exception as ex:
         print("Error", ex)
         response_message = "Feature Not found"
@@ -65,8 +65,8 @@ async def get_content_of_feature(feature_id: int):
     }
     try:
         feature = session.query(Feature).filter(
-            Feature.id == feature_id).one()
-        knowledge = session.query(Knowledge).filter(Knowledge.id == feature.knowledge_id).one()
+            Feature.id == feature_id).first()
+        knowledge = session.query(Knowledge).filter(Knowledge.id == feature.knowledge_id).first()
         related_knowledge = session.query(Knowledge).filter(Knowledge.category_id == knowledge.category_id).all()
         related_feature = session.query(Feature).filter(Feature.knowledge_id.in_([e.id for e in related_knowledge])).all()
         data['knowledge_id'] = feature.knowledge_id
